@@ -20,9 +20,7 @@ async function setup () {
 
   let openstoreAbi = res.data;
   openstoreContract = new web3.eth.Contract(openstoreAbi, config.contracts.openstore.address);
-
-  let wallet = "nft";
-  accounts[wallet] = web3.eth.accounts.wallet.add(config.wallets[wallet].privateKey);
+  accounts.nft = web3.eth.accounts.wallet.add(config.wallets.nft.privateKey);
 }
 
 async function main () {
@@ -37,19 +35,11 @@ async function main () {
     .call()
     .then(res => console.log(`The total supply of ${nft} is ${res}`));
 
-  openstoreContract.methods.balanceOf(accounts[wallet].address, config.tokens.erc1155[nft])
+  openstoreContract.methods.balanceOf(config.wallets[wallet].address, config.tokens.erc1155[nft])
     .call()
     .then(res => console.log(`${wallet} account has a total of ${res} ${nft} tokens`));
 
-  let transactionAbi = openstoreContract.methods.safeTransferFrom(accounts[wallet].address, config.wallets.test.address, config.tokens.erc1155[nft], 1, "0x0")
-    .encodeABI();
-  // let { message, r, s, v } = accounts[wallet].sign(transactionAbi, accounts[wallet].privateKey);
-  let { message, r, s, v } = accounts[wallet].sign(transactionAbi);
-
-  // console.log(message)
-  // process.exit();
-
-  openstoreContract.methods.executeMetaTransaction(accounts[wallet].address, message, r, s, v)
+  openstoreContract.methods.executeMetaTransaction(config.wallets[wallet].address, config.wallets.test.address, config.tokens.erc1155[nft], 1, 0x00)
     .call()
     .then(res => console.log(res));
 }
