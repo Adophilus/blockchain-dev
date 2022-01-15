@@ -39,9 +39,17 @@ async function main () {
     .call()
     .then(res => console.log(`${wallet} account has a total of ${res} ${nft} tokens`));
 
-  openstoreContract.methods.executeMetaTransaction(config.wallets[wallet].address, config.wallets.test.address, config.tokens.erc1155[nft], 1, 0x00)
+  let safeTransferFromCall = await openstoreContract.methods.safeTransferFrom(config.wallets[wallet].address, config.wallets.test.address, config.tokens.erc1155[nft], 1, 0x00);
+  let functionSignature = accounts[wallet].sign(safeTransferFromCall.encodeABI());
+
+  openstoreContract.methods.setApproveForAll(config.wallets[wallet].address, true)
     .call()
     .then(res => console.log(res));
+
+  openstoreContract.methods.executeMetaTransaction(config.wallets[wallet].address, functionSignature.message, functionSignature.r, functionSignature.s, functionSignature.v)
+    .call()
+    .then(res => console.log(res));
+    .catch(err => console.log(`An error occurred while transferring ${nft}. ${err}`))
 }
 
 main();

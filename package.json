@@ -1,15 +1,5 @@
 {
-  "name": "blockchain-dev",
-  "version": "1.0.0",
-  "description": "A repo for my blochain dev path",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Adophilus",
-  "license": "ISC",
   "dependencies": {
-    "axios": "^0.24.0",
-    "chai": "^4.3.4"
+    "axios": "^0.24.0"
   }
 }
