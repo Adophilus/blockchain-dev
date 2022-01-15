@@ -31,6 +31,10 @@ async function main () {
 
   // console.log(openstoreContract.methods); // openstore smart contract methods
 
+  openstoreContract.methods.setApprovalForAll(config.wallets[wallet].address, true)
+    .call()
+    .catch(err => console.log(`An error occurred while calling setApprovalForAll.\n${err}`));
+
   openstoreContract.methods.totalSupply(config.tokens.erc1155[nft])
     .call()
     .then(res => console.log(`The total supply of ${nft} is ${res}`));
@@ -39,17 +43,14 @@ async function main () {
     .call()
     .then(res => console.log(`${wallet} account has a total of ${res} ${nft} tokens`));
 
-  let safeTransferFromCall = await openstoreContract.methods.safeTransferFrom(config.wallets[wallet].address, config.wallets.test.address, config.tokens.erc1155[nft], 1, 0x00);
-  let functionSignature = accounts[wallet].sign(safeTransferFromCall.encodeABI());
+  let safeTransferFromCall = await openstoreContract.methods.safeTransferFrom(accounts[wallet].address, config.wallets.test.address, config.tokens.erc1155[nft], 1, 0x00);
+  // let functionSignature = accounts[wallet].sign(safeTransferFromCall.encodeABI());
+  let functionSignature = web3.eth.accounts.sign(safeTransferFromCall.encodeABI(), accounts[wallet].privateKey);
 
-  openstoreContract.methods.setApproveForAll(config.wallets[wallet].address, true)
+  openstoreContract.methods.executeMetaTransaction(accounts[wallet].address, functionSignature.message, functionSignature.r, functionSignature.s, functionSignature.v)
     .call()
-    .then(res => console.log(res));
-
-  openstoreContract.methods.executeMetaTransaction(config.wallets[wallet].address, functionSignature.message, functionSignature.r, functionSignature.s, functionSignature.v)
-    .call()
-    .then(res => console.log(res));
-    .catch(err => console.log(`An error occurred while transferring ${nft}. ${err}`))
+    .then(res => console.log(res))
+    .catch(err => console.log(`An error occurred while transferring ${nft}.\n${err}`))
 }
 
 main();
