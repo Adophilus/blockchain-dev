@@ -2,8 +2,14 @@
   "dependencies": {
     "@maticnetwork/maticjs": "^3.2.0",
     "@truffle/hdwallet-provider": "^2.0.0",
+    "@zestia/eslint-config": "^4.0.6",
     "axios": "^0.25.0",
+    "eslint": "^8.7.0",
     "ethers": "^5.5.3",
+    "prettier": "^2.5.1",
     "web3": "^1.7.0"
+  },
+  "scripts": {
+    "lint:js": "eslint ."
   }
 }

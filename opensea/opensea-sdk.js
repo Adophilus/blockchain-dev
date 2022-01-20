@@ -4,28 +4,28 @@ const helpers = require("../src/helpers.js");
 
 const config = helpers.loadConfig();
 
-const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io');
+const provider = new Web3.providers.HttpProvider("https://mainnet.infura.io");
 const seaport = new OpenSeaPort(provider, {
   networkName: Network.Main,
-  apiKey: config.services.opensea.api.key
+  apiKey: config.services.opensea.api.key,
 });
 
-async function getAsset (tokenId) {
+async function getAsset(tokenId) {
   return await seaport.api.getAsset({
     tokenAddress: config.contracts.openstore.address,
-    id: tokenId
+    id: tokenId,
   });
 }
 
-async function getAssetBalance (address, asset) {
+async function getAssetBalance(address, asset) {
   return await seaport.api.getAssetBalance({
     accountAddress: address,
-    asset
+    asset,
   });
 }
 
-async function main () {
-  let tokenId = config.tokens.erc1155.BillionaireNFT;
+async function main() {
+  const tokenId = config.tokens.erc1155.BillionaireNFT;
   const nft = await getAsset(tokenId);
   console.log(nft);
 
