@@ -36,17 +36,6 @@ async function main () {
 
   // console.log(openstoreContract.methods); // openstore smart contract methods
 
-  /*
-  try {
-    await openstoreContract.methods.setApprovalForAll(config.wallets[wallet].address, true)
-      .call();
-  }
-  catch (err) {
-    console.log("An error occurred while calling setApprovalForAll");
-    console.log(err);
-  }
-  */
-
   try {
     res = await openstoreContract.methods.totalSupply(config.tokens.erc1155[nft])
       .call();
@@ -74,11 +63,6 @@ async function main () {
 
   let functionSignature = await openstoreContract.methods.safeTransferFrom(accounts[wallet].address, config.wallets.test.address, config.tokens.erc1155[nft], 1, 0x00);
 
-  res = await functionSignature.call();
-  console.log("Transferred nfts");
-  console.log(res);
-
-  process.exit();
   // let transferCall = accounts[wallet].sign(functionSignature.encodeABI());
   let transferCall = await accounts[wallet].sign(functionSignature.encodeABI());
 

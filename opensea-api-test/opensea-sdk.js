@@ -25,7 +25,7 @@ async function getAssetBalance (address, asset) {
 }
 
 async function main () {
-  let tokenId = "41017166535580716026281637020502419084333534645352596651664825555110961269248";
+  let tokenId = config.tokens.erc1155.BillionaireNFT;
   const nft = await getAsset(tokenId);
   console.log(nft);
 

@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "@maticnetwork/maticjs": "^3.1.0",
+    "@maticnetwork/maticjs": "^3.2.0",
     "@truffle/hdwallet-provider": "^2.0.0",
-    "axios": "^0.24.0",
-    "opensea-js": "^1.2.7",
-    "web3": "^1.6.1"
+    "axios": "^0.25.0",
+    "ethers": "^5.5.3",
+    "web3": "^1.7.0"
   }
 }
