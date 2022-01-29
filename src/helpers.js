@@ -12,7 +12,12 @@ async function fetchABI(contractAddress, network, config) {
   if (network === "polygon") {
     apiKey = config.explorers.polygonscan.api.key;
     apiUrl = config.explorers.polygonscan.api.url;
-  } else {
+  }
+  else if (network === "bsc") {
+    apiKey = config.explorers.bscscan.api.key;
+    apiUrl = config.explorers.bscscan.api.url;
+  }
+  else {
     throw new Error("Unsupported or invalid network!");
   }
 
@@ -29,12 +34,17 @@ async function fetchABI(contractAddress, network, config) {
   return res.data;
 }
 
-function loadABI(abi) {
-  return JSON.parse(fs.readFileSync(path.join("abis", `${abi}.abi`)));
+function loadABI (abiName) {
+  return JSON.parse(fs.readFileSync(path.join("abis", `${abiName}.abi`)));
+}
+
+function saveABI (abi, abiName) {
+  fs.writeFileSync(path.join("abis", `${abiName}.abi`), JSON.stringify(abi));
 }
 
 module.exports = {
   loadConfig,
   fetchABI,
   loadABI,
+  saveABI
 };
