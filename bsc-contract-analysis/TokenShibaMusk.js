@@ -9,8 +9,7 @@ async function main () {
   }
   catch (err) {
     try {
-      // ShibaMusk = await helpers.fetchABI(config.tokens.bsc.erc20.ShibaMusk, "bsc", config)
-      ShibaMusk = await helpers.fetchABI("0x1074d5bf122985da98e131fef7397f51f9978c7b", "bsc", config)
+      ShibaMusk = await helpers.fetchABI(config.tokens.bsc.erc20.ShibaMusk, "bsc", config)
       helpers.saveABI(ShibaMusk, "ShibaMusk")
     }
     catch (err) {
@@ -22,8 +21,6 @@ async function main () {
   
   // instantiate the Contract object
   ShibaMusk = new web3.eth.Contract(ShibaMusk, config.tokens.bsc.erc20.ShibaMusk, { from: accounts.main.address })
-  
-  // console.log(ShibaMusk)
   
   try {
     let balance = await ShibaMusk.methods.balanceOf(accounts.main.address).call()
