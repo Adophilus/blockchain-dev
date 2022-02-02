@@ -1,59 +1,70 @@
-const { accounts, config, helpers, web3 } = require("./Token")
-const moment = require("moment")
+const Token = require("./Token");
+const moment = require("moment");
 
-async function checkImplementation (METAMUSK) {
-  let ret = (await METAMUSK.methods.implementation().call())
+const {
+  accounts,
+  config,
+  determineUnlockTime,
+  ethers,
+  helpers,
+  provider,
+  web3,
+} = Token;
 
-  for (let prop in ret) {
-    console.log(prop)
-  }
-  process.exit(1)
-}
-
-async function fetchBalance (METAMUSK) {
-  return await METAMUSK.methods.getBalance().call()
-}
-
-async function main () {
-  let METAMUSK
-
-  try {
-    METAMUSK = await helpers.loadABI("METAMUSK")
-  }
-  catch (err) {
-    try {
-      METAMUSK = await helpers.fetchABI(config.tokens.bsc.erc20.METAMUSK, "bsc", config)
-      helpers.saveABI(METAMUSK, "METAMUSK")
-    }
-    catch (err) {
-      console.log("Couldn't fetch contract ABI")
-      console.log(err)
-      process.exit(1)
-    }
-  }
-  
-  // instantiate the Contract object
-  METAMUSK = new web3.eth.Contract(METAMUSK, config.tokens.bsc.erc20.METAMUSK, { from: accounts.main.address })
+async function main() {
+  const token = { address: config.tokens.bsc.erc20.METAMUSK };
+  const account = accounts.main;
+  let METAMUSK;
 
   try {
-    let implementation = await checkImplementation(METAMUSK)
-    console.log(`Implementation: ${implementation}`)
-  }
-  catch (err) {
-    console.log("Couldn't check implementation")
-    console.log(err)
+    METAMUSK = await Token.initContract(token.address, "METAMUSK", account);
+    console.log("Instantiated contract object!");
+  } catch (err) {
+    console.log("Failed to instantiate token contract");
+    console.log(err);
+    return false;
   }
 
   try {
-    let balance = await fetchBalance(METAMUSK);
-    console.log(`The balance of the ${accounts[0]} is ${balance}`)
-  }
-  catch (err) {
-    console.log("Couldn't fetch balance")
-    console.log(`Error: ${err}`)
+    token.balance = await Token.fetchBalance(METAMUSK, account.address);
+    console.log(`Balance of the ${account.address} is ${token.balance}`);
+  } catch (err) {
+    console.log("Couldn't fetch balance");
+    console.log(`Error: ${err}`);
   }
 
-  return true
+  try {
+    const unlockTime = await Token.determineUnlockTime(
+      METAMUSK,
+      account.address
+    );
+    console.log(`The token is unlocking at: ${unlockTime}`);
+  } catch (err) {
+    console.log(`Token unlock date could not be determined!`);
+    console.log(err);
+  }
+
+  // console.log(web3.eth.gasPrice)
+  return false;
+
+  try {
+    const res = METAMUSK.methods
+      .transferLockToken(accounts.secondary, token.balance)
+      .send();
+    console.log(res);
+  } catch (err) {
+    console.log("An error occurred while trying to transfer the locked tokens");
+    console.log(err);
+  }
 }
 
-main();
+main()
+  .then(() => {
+    provider.engine.stop();
+    console.log("Execution completed!");
+  })
+  .catch((err) => {
+    provider.engine.stop();
+    console.log("An error occurred");
+    console.log(err);
+  });

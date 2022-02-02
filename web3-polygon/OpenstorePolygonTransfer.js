@@ -47,7 +47,7 @@ async function main() {
   } catch (err) {
     console.log("error while creating safeTransferFrom contract call");
     console.log(err);
-    process.exit(1)
+    process.exit(1);
   }
 
   try {
@@ -56,8 +56,8 @@ async function main() {
     );
   } catch (err) {
     console.log("error occurred while signing safeTransferFrom call");
-    console.log(err)
-    process.exit(1)
+    console.log(err);
+    process.exit(1);
   }
 
   try {
@@ -80,4 +80,4 @@ async function main() {
   }
 }
 
-main()
+main();

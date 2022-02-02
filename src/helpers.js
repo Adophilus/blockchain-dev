@@ -1,6 +1,7 @@
 const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
+const { getImplementationAddress } = require("@openzeppelin/upgrades-core");
 
 function loadConfig(configPath = "./.env") {
   return JSON.parse(fs.readFileSync(configPath));
@@ -12,12 +13,10 @@ async function fetchABI(contractAddress, network, config) {
   if (network === "polygon") {
     apiKey = config.explorers.polygonscan.api.key;
     apiUrl = config.explorers.polygonscan.api.url;
-  }
-  else if (network === "bsc") {
+  } else if (network === "bsc") {
     apiKey = config.explorers.bscscan.api.key;
     apiUrl = config.explorers.bscscan.api.url;
-  }
-  else {
+  } else {
     throw new Error("Unsupported or invalid network!");
   }
 
@@ -34,17 +33,24 @@ async function fetchABI(contractAddress, network, config) {
   return res.data;
 }
 
-function loadABI (abiName) {
+function loadABI(abiName) {
   return JSON.parse(fs.readFileSync(path.join("abis", `${abiName}.abi`)));
 }
 
-function saveABI (abi, abiName) {
+function saveABI(abi, abiName) {
   fs.writeFileSync(path.join("abis", `${abiName}.abi`), JSON.stringify(abi));
+}
+
+async function checkImplementationAddress(provider, tokenAddress) {
+  return await getImplementationAddress(provider, tokenAddress);
 }
 
 module.exports = {
   loadConfig,
+
   fetchABI,
   loadABI,
-  saveABI
+  saveABI,
+
+  checkImplementationAddress,
 };

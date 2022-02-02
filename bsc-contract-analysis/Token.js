@@ -1,24 +1,89 @@
-const Web3 = require("web3")
-const HDWalletProvider = require("@truffle/hdwallet-provider")
-const helpers = require("../src/helpers")
+const Ethers = require("ethers");
+const Web3 = require("web3");
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+const helpers = require("../src/helpers");
+const moment = require("moment");
 
-const config = helpers.loadConfig()
+const config = helpers.loadConfig();
 
 const provider = new HDWalletProvider(
   config.wallets.main.privateKey,
   config.networks.bsc.mainnet.node.moralis
-)
+);
+
+const ethers = new Ethers.providers.Web3Provider(provider);
 const web3 = new Web3(provider);
 
 const accounts = {
   main: web3.eth.accounts.wallet.add(config.wallets.main.privateKey),
   nft: web3.eth.accounts.wallet.add(config.wallets.nft.privateKey),
-  test: web3.eth.accounts.wallet.add(config.wallets.test.privateKey)
+  test: web3.eth.accounts.wallet.add(config.wallets.test.privateKey),
+};
+
+async function loadABI(contractAddress, name, fetchFirst = false) {
+  let abi;
+
+  try {
+    if (fetchFirst) {
+      throw new Error("dummy error message");
+    }
+
+    abi = await helpers.loadABI(name);
+  } catch (err) {
+    try {
+      abi = await helpers.fetchABI(contractAddress, "bsc", config);
+      helpers.saveABI(abi, name);
+    } catch (err) {
+      console.log("Couldn't fetch contract ABI");
+      console.log(err);
+      process.exit(1);
+    }
+  }
+
+  return abi;
+}
+
+async function initContract(tokenContractAddress, tokenName, account) {
+  const tokenImplementationAddress = await helpers.checkImplementationAddress(
+    ethers,
+    tokenContractAddress
+  );
+  const tokenAbi = await loadABI(tokenImplementationAddress, tokenName);
+
+  // instantiate the Contract object
+  const tokenContract = new web3.eth.Contract(tokenAbi, tokenContractAddress, {
+    from: account.address,
+  });
+
+  return tokenContract;
+}
+
+async function fetchBalance(tokenContract, account) {
+  return await tokenContract.methods.balanceOf(account).call();
+}
+
+async function determineUnlockTime(tokenContract, account) {
+  // let startDate = moment(new Date())
+
+  // function determineYear () {
+  // while (tokenContract.)
+
+  // }
+
+  return moment(await tokenContract.methods.unlockTime());
 }
 
 module.exports = {
   accounts,
   config,
+  Ethers,
+  ethers,
   helpers,
-  web3
-}
+  provider,
+  web3,
+
+  determineUnlockTime,
+  fetchBalance,
+  initContract,
+  loadABI,
+};

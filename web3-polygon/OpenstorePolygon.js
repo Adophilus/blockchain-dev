@@ -4,7 +4,8 @@ const helpers = require("../src/helpers");
 
 const config = helpers.loadConfig();
 
-let accounts = {}, openstoreABI;
+const accounts = {};
+let openstoreABI;
 
 const provider = new HDWalletProvider(
   config.wallets.nft.privateKey,
@@ -31,5 +32,5 @@ accounts.test = web3.eth.accounts.wallet.add(config.wallets.test.privateKey);
 
 module.exports = {
   accounts,
-  openstoreContract
+  openstoreContract,
 };
