@@ -63,7 +63,7 @@ async function initContract(tokenContractAddress, tokenName, account) {
 }
 
 async function fetchBalance(tokenContract, account) {
-  return await tokenContract.methods.balanceOf(account).call();
+  return tokenContract.methods.balanceOf(account).call();
 }
 
 async function determineUnlockTime(tokenContract, account) {

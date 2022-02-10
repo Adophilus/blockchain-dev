@@ -15,6 +15,9 @@
     "web3": "^1.7.0"
   },
   "scripts": {
-    "lint:js": "eslint"
+    "lint:js": "eslint",
+
+    "ganache": "node_modules/.bin/ganache",
+    "truffle": "node_modules/.bin/truffle"
   }
 }

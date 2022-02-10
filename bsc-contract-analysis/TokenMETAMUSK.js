@@ -1,15 +1,7 @@
 const Token = require("./Token");
 const moment = require("moment");
 
-const {
-  accounts,
-  config,
-  determineUnlockTime,
-  ethers,
-  helpers,
-  provider,
-  web3,
-} = Token;
+const { accounts, config, helpers, provider } = Token;
 
 async function main() {
   const token = { address: config.tokens.bsc.erc20.METAMUSK };
@@ -44,6 +36,18 @@ async function main() {
     console.log(`The token is unlocking at: ${token.unlockTime}`);
   } catch (err) {
     console.log(`Token unlock date could not be determined!`);
+    console.log(err);
+  }
+
+  try {
+    const res = await token.contract.methods.getAvailableBalance(
+      account.address,
+      moment.now()
+    );
+    call();
+    console.log(`Available balance of the ${account.address} is ${res}`);
+  } catch (err) {
+    console.log("Couldn't fetch balance");
     console.log(err);
   }
 
