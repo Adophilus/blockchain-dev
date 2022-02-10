@@ -6,6 +6,7 @@ const { accounts, config, helpers, provider } = Token;
 async function main() {
   const token = { address: config.tokens.bsc.erc20.METAMUSK };
   const account = accounts.main;
+  const receiver = config.wallets.secondary;
 
   try {
     token.contract = await Token.initContract(
@@ -29,9 +30,16 @@ async function main() {
   }
 
   try {
-    token.unlockTime = await Token.determineUnlockTime(
-      token.contract,
-      account.address
+    const res = await Token.fetchBalance(token.contract, receiver.address);
+    console.log(`Balance of the ${receiver.address} is ${res}`);
+  } catch (err) {
+    console.log("Couldn't fetch balance");
+    console.log(err);
+  }
+
+  try {
+    token.unlockTime = moment.unix(
+      await token.contract.methods.unlockTime().call()
     );
     console.log(`The token is unlocking at: ${token.unlockTime}`);
   } catch (err) {
@@ -40,12 +48,15 @@ async function main() {
   }
 
   try {
-    const res = await token.contract.methods.getAvailableBalance(
-      account.address,
-      moment.now()
+    const res = await token.contract.methods
+      .getAvailableBalance(
+        account.address,
+        moment(new Date()).add(2, "month").unix()
+      )
+      .call();
+    console.log(
+      `Available balance of ${account.address} in 2 months is ${res}`
     );
-    call();
-    console.log(`Available balance of the ${account.address} is ${res}`);
   } catch (err) {
     console.log("Couldn't fetch balance");
     console.log(err);
@@ -53,11 +64,13 @@ async function main() {
 
   try {
     const res = await token.contract.methods
-      .transferLockToken(accounts.secondary.address, token.balance)
+      .transferFrom(account.address, receiver.address, token.balance)
       .send({ gas: 22000, to: account.address });
     console.log(res);
   } catch (err) {
-    console.log("An error occurred while trying to transfer the locked tokens");
+    console.log(
+      `An error occurred while trying to transfer the tokens from ${account.address} to ${receiver.address}`
+    );
     console.log(err);
   }
 }

@@ -66,17 +66,6 @@ async function fetchBalance(tokenContract, account) {
   return tokenContract.methods.balanceOf(account).call();
 }
 
-async function determineUnlockTime(tokenContract, account) {
-  // let startDate = moment(new Date())
-
-  // function determineYear () {
-  // while (tokenContract.)
-
-  // }
-
-  return moment(await tokenContract.methods.unlockTime());
-}
-
 module.exports = {
   accounts,
   config,
@@ -86,7 +75,6 @@ module.exports = {
   provider,
   web3,
 
-  determineUnlockTime,
   fetchBalance,
   initContract,
   loadABI,
