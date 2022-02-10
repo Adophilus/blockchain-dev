@@ -18,6 +18,7 @@
     "lint:js": "eslint",
 
     "ganache": "node_modules/.bin/ganache",
+    "solcjs": "node_modules/.bin/solcjs",
     "truffle": "node_modules/.bin/truffle"
   }
 }
