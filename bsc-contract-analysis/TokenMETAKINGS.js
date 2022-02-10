@@ -12,7 +12,7 @@ const {
 } = Token;
 
 async function main() {
-  const token = { address: config.tokens.bsc.erc20.METAMUSK };
+  const token = { address: config.tokens.bsc.erc20.METAKINGS };
   const account = accounts.main;
 
   try {
@@ -35,6 +35,9 @@ async function main() {
     console.log("Couldn't fetch balance");
     console.log(err);
   }
+
+  console.log(token.contract.methods);
+  return false;
 
   try {
     token.unlockTime = await Token.determineUnlockTime(

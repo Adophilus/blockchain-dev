@@ -33,4 +33,6 @@ accounts.test = web3.eth.accounts.wallet.add(config.wallets.test.privateKey);
 module.exports = {
   accounts,
   openstoreContract,
+  provider,
+  web3,
 };

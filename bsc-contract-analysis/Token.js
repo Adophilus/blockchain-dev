@@ -17,6 +17,7 @@ const web3 = new Web3(provider);
 const accounts = {
   main: web3.eth.accounts.wallet.add(config.wallets.main.privateKey),
   nft: web3.eth.accounts.wallet.add(config.wallets.nft.privateKey),
+  secondary: web3.eth.accounts.wallet.add(config.wallets.secondary.privateKey),
   test: web3.eth.accounts.wallet.add(config.wallets.test.privateKey),
 };
 
@@ -35,8 +36,7 @@ async function loadABI(contractAddress, name, fetchFirst = false) {
       helpers.saveABI(abi, name);
     } catch (err) {
       console.log("Couldn't fetch contract ABI");
-      console.log(err);
-      process.exit(1);
+      throw err;
     }
   }
 
@@ -44,18 +44,22 @@ async function loadABI(contractAddress, name, fetchFirst = false) {
 }
 
 async function initContract(tokenContractAddress, tokenName, account) {
-  const tokenImplementationAddress = await helpers.checkImplementationAddress(
-    ethers,
-    tokenContractAddress
-  );
-  const tokenAbi = await loadABI(tokenImplementationAddress, tokenName);
+  try {
+    const tokenImplementationAddress = await helpers.checkImplementationAddress(
+      ethers,
+      tokenContractAddress
+    );
 
-  // instantiate the Contract object
-  const tokenContract = new web3.eth.Contract(tokenAbi, tokenContractAddress, {
-    from: account.address,
-  });
+    const tokenAbi = await loadABI(tokenImplementationAddress, tokenName);
 
-  return tokenContract;
+    // instantiate the Contract object
+    return new web3.eth.Contract(tokenAbi, tokenContractAddress, {
+      from: account,
+    });
+  } catch (err) {
+    for (const m in err) console.log(m);
+    throw err;
+  }
 }
 
 async function fetchBalance(tokenContract, account) {
