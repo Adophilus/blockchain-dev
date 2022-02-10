@@ -1,24 +1,32 @@
 const Token = require("./Token");
 const moment = require("moment");
 
-const { accounts, config, helpers, provider, web3 } = Token;
+const { accounts, config, provider } = Token;
 
 async function main() {
-  const token = config.tokens.bsc.erc20.ShibaMusk;
-  const abi = await Token.loadABI(token, "ShibaMusk");
-  let ShibaMusk;
+  const token = { address: config.tokens.bsc.erc20.ShibaMusk };
   const account = accounts.main;
-
-  // instantiate the Contract object
-  ShibaMusk = new web3.eth.Contract(abi, token, { from: account.address });
-  console.log(ShibaMusk);
+  const receiver = accounts.secondary;
 
   try {
-    const balance = await Token.fetchBalance(ShibaMusk, account);
-    console.log(`Balance of the ${account.address} is ${balance}`);
+    token.contract = await Token.initContract(
+      token.address,
+      "ShibaMusk",
+      account.address
+    );
+    console.log("Instantiated contract object!");
+  } catch (err) {
+    console.log("Failed to instantiate token contract");
+    console.log(err);
+    return false;
+  }
+
+  try {
+    token.balance = await Token.fetchBalance(token.contract, account.address);
+    console.log(`Balance of the ${account.address} is ${token.balance}`);
   } catch (err) {
     console.log("Couldn't fetch balance");
-    console.log(`Error: ${err}`);
+    console.log(err);
   }
 
   //
@@ -41,8 +49,15 @@ async function main() {
   // console.log(err)
   // }
   //
-
-  provider.engine.stop();
 }
 
-main();
+main()
+  .then(() => {
+    provider.engine.stop();
+    console.log("Execution completed!");
+  })
+  .catch((err) => {
+    provider.engine.stop();
+    console.log("An error occurred");
+    console.log(err);
+  });

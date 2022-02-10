@@ -5,7 +5,7 @@ const config = helpers.loadConfig();
 async function main() {
   const wallet = "nft";
   const nft = "BillionaireNFT";
-  let res;
+  let res, transferCall;
 
   try {
     res = await openstoreContract.methods
@@ -36,8 +36,10 @@ async function main() {
     console.log(err);
   }
 
+  let functionSignature;
+
   try {
-    const functionSignature = await openstoreContract.methods.safeTransferFrom(
+    functionSignature = await openstoreContract.methods.safeTransferFrom(
       accounts[wallet].address,
       config.wallets.test.address,
       config.tokens.erc1155[nft],
@@ -51,9 +53,7 @@ async function main() {
   }
 
   try {
-    const transferCall = await accounts[wallet].sign(
-      functionSignature.encodeABI()
-    );
+    transferCall = await accounts[wallet].sign(functionSignature.encodeABI());
   } catch (err) {
     console.log("error occurred while signing safeTransferFrom call");
     console.log(err);

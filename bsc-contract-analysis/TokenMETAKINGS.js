@@ -1,15 +1,6 @@
 const Token = require("./Token");
-const moment = require("moment");
 
-const {
-  accounts,
-  config,
-  determineUnlockTime,
-  ethers,
-  helpers,
-  provider,
-  web3,
-} = Token;
+const { accounts, config, provider } = Token;
 
 async function main() {
   const token = { address: config.tokens.bsc.erc20.METAKINGS };
@@ -18,13 +9,13 @@ async function main() {
   try {
     token.contract = await Token.initContract(
       token.address,
-      "METAMUSK",
+      "METAKINGS",
       account.address
     );
     console.log("Instantiated contract object!");
   } catch (err) {
     console.log("Failed to instantiate token contract");
-    console.log(`Error: ${err}`);
+    console.log(err);
     return false;
   }
 
@@ -36,27 +27,14 @@ async function main() {
     console.log(err);
   }
 
-  console.log(token.contract.methods);
-  return false;
-
   try {
-    token.unlockTime = await Token.determineUnlockTime(
-      token.contract,
+    const METAKINGSLockContract = await Token.initContract(
+      await token.contract.methods.LOCK_CONTRACT().call(),
+      "METAKINGSLockContract",
       account.address
     );
-    console.log(`The token is unlocking at: ${token.unlockTime}`);
   } catch (err) {
-    console.log(`Token unlock date could not be determined!`);
-    console.log(err);
-  }
-
-  try {
-    const res = await token.contract.methods
-      .transferLockToken(accounts.secondary.address, token.balance)
-      .send({ gas: 22000, to: account.address });
-    console.log(res);
-  } catch (err) {
-    console.log("An error occurred while trying to transfer the locked tokens");
+    console.log("Couldn't determine the lock contract address");
     console.log(err);
   }
 }

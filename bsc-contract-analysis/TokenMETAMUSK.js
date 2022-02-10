@@ -1,7 +1,7 @@
 const Token = require("./Token");
 const moment = require("moment");
 
-const { accounts, config, helpers, provider } = Token;
+const { accounts, config, provider } = Token;
 
 async function main() {
   const token = { address: config.tokens.bsc.erc20.METAMUSK };
@@ -17,7 +17,7 @@ async function main() {
     console.log("Instantiated contract object!");
   } catch (err) {
     console.log("Failed to instantiate token contract");
-    console.log(`Error: ${err}`);
+    console.log(err);
     return false;
   }
 

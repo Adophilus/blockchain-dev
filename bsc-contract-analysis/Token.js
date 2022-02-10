@@ -2,7 +2,6 @@ const Ethers = require("ethers");
 const Web3 = require("web3");
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 const helpers = require("../src/helpers");
-const moment = require("moment");
 
 const config = helpers.loadConfig();
 
@@ -57,12 +56,16 @@ async function initContract(tokenContractAddress, tokenName, account) {
       from: account,
     });
   } catch (err) {
-    for (const m in err) console.log(m);
-    throw err;
+    const tokenAbi = await loadABI(tokenContractAddress, tokenName);
+
+    // instantiate the Contract object
+    return new web3.eth.Contract(tokenAbi, tokenContractAddress, {
+      from: account,
+    });
   }
 }
 
-async function fetchBalance(tokenContract, account) {
+function fetchBalance(tokenContract, account) {
   return tokenContract.methods.balanceOf(account).call();
 }
 

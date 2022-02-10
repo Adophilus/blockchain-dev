@@ -1,5 +1,4 @@
 const axios = require("axios");
-const fs = require("fs");
 const helpers = require("../src/helpers.js");
 
 const config = helpers.loadConfig();

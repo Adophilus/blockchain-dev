@@ -30,6 +30,10 @@ async function fetchABI(contractAddress, network, config) {
     },
   });
 
+  if (res.data === "Contract source code not verified") {
+    throw new Error(res.data);
+  }
+
   return res.data;
 }
 
@@ -41,8 +45,8 @@ function saveABI(abi, abiName) {
   fs.writeFileSync(path.join("abis", `${abiName}.abi`), JSON.stringify(abi));
 }
 
-async function checkImplementationAddress(provider, tokenAddress) {
-  return await getImplementationAddress(provider, tokenAddress);
+function checkImplementationAddress(provider, tokenAddress) {
+  return getImplementationAddress(provider, tokenAddress);
 }
 
 module.exports = {

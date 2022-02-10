@@ -10,15 +10,15 @@ const seaport = new OpenSeaPort(provider, {
   apiKey: config.services.opensea.api.key,
 });
 
-async function getAsset(tokenId) {
-  return await seaport.api.getAsset({
+function getAsset(tokenId) {
+  return seaport.api.getAsset({
     tokenAddress: config.contracts.openstore.address,
     id: tokenId,
   });
 }
 
-async function getAssetBalance(address, asset) {
-  return await seaport.api.getAssetBalance({
+function getAssetBalance(address, asset) {
+  return seaport.api.getAssetBalance({
     accountAddress: address,
     asset,
   });
