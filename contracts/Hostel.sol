@@ -23,15 +23,15 @@ contract Hostel {
     Room room;
   }
 
-  address payable landlord;
-  OccupancyInfo[] occupancies;
+  address landlord;
   Room[] rooms;
   uint public number_of_occupants = 0;
   uint public number_of_rooms = 0;
   // mapping(uint => Room) public Room_by_number;
-  // mapping(uint => OccupancyInfo) private occupancies;
+  mapping(uint8 => OccupancyInfo) private occupancies;
+  mapping(address => Tenant) private tenant;
 
-  constructor (uint _a) {
+  constructor () {
     for (uint8 i = 0; i < 10; i++) {
       _createRoom(i);
     }
@@ -42,7 +42,7 @@ contract Hostel {
     _;
   }
 
-  modifier notLandlord () {
+  modifier notLandlord {
     require(msg.sender != landlord, "Only tenants can access this method!");
     _;
   }
@@ -58,26 +58,26 @@ contract Hostel {
   }
 
   modifier sameTenant (uint8 _room_id) {
-    require(msg.sender == rooms[_room_id].tenant.addr, "Only the occupant is allowed in here!");
+    require(msg.sender == rooms[_room_id].occupant.addr, "Only the occupant is allowed in here!");
     _;
   }
 
   modifier leaseTimeUp (uint8 _room_id) {
-    require(now < rooms[_room_id].lease_end, "Your lease time has expired!");
+    require(block.timestamp < occupancies[_room_id].lease_end, "Your lease time has expired!");
     _;
   }
 
   function _createRoom (uint8 _id) internal {
-    rooms.push(Room(_id, "room", false, false));
+    rooms.push(Room(_id, "room", 2000, Tenant("", "", address(0x00)), true));
   }
 
-  function setLandlord (address _landlord) public payable {
-    if (!landlord) {
+  function setLandlord (address _landlord) public {
+    //if (landlord) {
       landlord = _landlord;
-    }
+    //}
   }
 
-  function inspectRoom (uint8 _room_id) onlyWhileVacant public {
+  function inspectRoom (uint8 _room_id) onlyWhileVacant(_room_id) public view returns (uint8, string memory, uint) {
     Room memory room = rooms[_room_id];
     return (room.number, room.name, room.rent);
   }
