@@ -4,7 +4,7 @@ const moment = require("moment");
 const { accounts, config, provider } = Token;
 
 async function main() {
-  const token = { address: config.tokens.bsc.erc20.METAMUSK };
+  const token = { address: config.tokens.erc20.bsc.METAMUSK };
   const account = accounts.main;
   const receiver = config.wallets.secondary;
 
@@ -65,7 +65,7 @@ async function main() {
   try {
     const res = await token.contract.methods
       .transferFrom(account.address, receiver.address, token.balance)
-      .send({ gas: 22000, to: account.address });
+      .send({ gas: 22020, to: account.address });
     console.log(res);
   } catch (err) {
     console.log(

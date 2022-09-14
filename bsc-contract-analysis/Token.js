@@ -7,7 +7,7 @@ const config = helpers.loadConfig();
 
 const provider = new HDWalletProvider(
   config.wallets.main.privateKey,
-  config.networks.bsc.mainnet.node.moralis
+  config.networks.bsc.moralis
 );
 
 const ethers = new Ethers.providers.Web3Provider(provider);
